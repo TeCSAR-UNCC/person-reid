@@ -1,0 +1,8 @@
+.idea/
+exp/
+tmp/
+*.pyc
+*.jpg
+*.txt
+*.pth
+events*
