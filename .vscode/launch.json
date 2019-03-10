@@ -15,12 +15,10 @@
                 "--trainset_part", "trainval", 
                 "--net_pretrained_path", "mobilenet_v2.pth.tar", 
                 "--net", "mobilenetV2",
-                "--exp_dir", "./expt_res",
+                "--exp_dir", "./debug/",
                 "--steps_per_log", "10", 
                 "--epochs_per_val", "5",
-                "--half", "false",
-                "--half", "true",
-                "--keep-batchnorm-fp32", "true",
+                "--keep-batchnorm-fp32", "false",
                 "--opt-level", "O2"
             ]
             /*"args": ["-d", "'(0,)'", "--only_test", "true", "--dataset", "combined", "--normalize_feature", "false",

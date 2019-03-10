@@ -38,7 +38,7 @@ from utils.utils import set_seed
 from utils.utils import adjust_lr_exp
 from utils.utils import adjust_lr_staircase
 
-from apex.fp16_utils import *
+from apex.fp16_utils import to_python_float
 from apex import amp, optimizers
 from apex.multi_tensor_apply import multi_tensor_applier
 
@@ -327,7 +327,7 @@ class ExtractFeature(object):
     ims = Variable(self.TVT(torch.from_numpy(ims).float()))
 
     feat = self.model(ims)
-    feat = feat.data.cpu().numpy()
+    feat = feat.data.cpu().numpy().astype(np.float32)
     # Restore the model to its old train/eval mode.
     self.model.train(old_train_eval_model)
     return feat
@@ -391,26 +391,27 @@ def main():
 
   tri_loss = TripletLoss(margin=cfg.margin)
 
-  #optimizer = optim.Adam(model.parameters(),
-  #                       lr=cfg.base_lr,
-  #                       weight_decay=cfg.weight_decay)
+  optimizer = optim.Adam(model.parameters(),
+                         lr=cfg.base_lr,
+                         weight_decay=cfg.weight_decay)
   #optimizer = optimizers.FusedAdam(model.parameters(),
   #                      lr=cfg.base_lr,
   #                      weight_decay=cfg.weight_decay)
 
-  optimizer = torch.optim.SGD(model.parameters(), cfg.base_lr,
-                              nesterov=True,
-                              momentum=cfg.momentum,
-                              weight_decay=cfg.weight_decay)
+  #optimizer = torch.optim.SGD(model.parameters(), cfg.base_lr,
+  #                            nesterov=True,
+  #                            momentum=cfg.momentum,
+  #                            weight_decay=cfg.weight_decay)
 
   model.cuda()
   model, optimizer = amp.initialize(model, optimizer,
-                                    opt_level=cfg.opt_level
-                                    #keep_batchnorm_fp32=cfg.keep_batchnorm_fp32,
+                                    opt_level=cfg.opt_level,
+                                    keep_batchnorm_fp32=cfg.keep_batchnorm_fp32,
                                     #loss_scale=cfg.loss_scale
                                     )
 
 
+  amp.init() # Register function
 
   # Bind them together just to save some codes in the following usage.
   modules_optims = [model, optimizer]
@@ -445,7 +446,8 @@ def main():
         load_ckpt(modules_optims, cfg.ckpt_file)
 
     for test_set, name in zip(test_sets, test_set_names):
-      test_set.set_feat_func(ExtractFeature(model_w, TVT))
+      feature_map = ExtractFeature(model_w, TVT)
+      test_set.set_feat_func(feature_map)
       print('\n=========> Test on dataset: {} <=========\n'.format(name))
       test_set.eval(
         normalize_feat=cfg.normalize_feature,
@@ -453,7 +455,8 @@ def main():
 
   def validate():
     if val_set.extract_feat_func is None:
-      val_set.set_feat_func(ExtractFeature(model_w, TVT))
+      feature_map = ExtractFeature(model_w, TVT)
+      val_set.set_feat_func(feature_map)
     print('\n=========> Test on validation set <=========\n')
     mAP, cmc_scores, _, _ = val_set.eval(
       normalize_feat=cfg.normalize_feature,

@@ -196,7 +196,7 @@ def shufflenetFeature(model):
     return model
 
 
-def shufflenetv2(width_mult=1., pretrained=False, path_to_predefined_model=''):
+def shufflenetv2(width_mult=2., pretrained=False, path_to_predefined_model=''):
     model = ShuffleNetV2(width_mult=width_mult)
     
     if pretrained:

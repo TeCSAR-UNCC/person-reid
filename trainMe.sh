@@ -1,7 +1,7 @@
-NET=shuffelnetV2
-DIR=./expt_res/$NET
+NET=mobilenetV2
+DIR=./expt_res/"$NET"_16bit
 
-rm -rvf ./expt_res/$NET/tensorboard
+rm -rvf $DIR/tensorboard
 
 python3 script/experiment/train.py \
 -d '(1,)' \
@@ -17,9 +17,10 @@ python3 script/experiment/train.py \
 --erase_prob 0.0 \
 --crop_prob 0.0 \
 --crop_ratio 1 \
---opt-level O0 \
+--opt-level O2 \
 --net  $NET \
---net_pretrained_path /mnt/4tb/person-reid-triplet-loss-two-models-baseline-python3/shufflenetv2_x1_69.402_88.374.pth.tar # It is not applicable for ResNet50
+--net_pretrained_path /mnt/4tb/person-reid-triplet-loss-two-models-baseline-python3/mobilenet_v2.pth.tar \
+#--net_pretrained_path /mnt/4tb/person-reid-triplet-loss-two-models-baseline-python3/shufflenetv2_x1_69.402_88.374.pth.tar # It is not applicable for ResNet50
 
 
 #--last_conv_stride 1 \ # Not useful in our case. 'market1501', 'cuhk03', 'duke', 'combined' #--lr_decay_type staircase \ #--resize_h_w '(224,224)' \
