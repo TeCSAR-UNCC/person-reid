@@ -1,8 +1,11 @@
 from __future__ import print_function
 
 import sys
+import os
 
-sys.path.insert(0, '.')
+PACKAGE_PARENT = '../../tri_loss/'
+SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
 import torch
 from torch.autograd import Variable
@@ -14,19 +17,21 @@ from os.path import join as ospj
 import numpy as np
 import argparse
 
-from tri_loss.dataset import create_dataset
-from tri_loss.model.Model import Model
+from dataset import create_dataset
+from model.Model import Model
 
-from tri_loss.utils.utils import time_str
-from tri_loss.utils.utils import str2bool
-from tri_loss.utils.utils import load_state_dict
-from tri_loss.utils.utils import set_devices
-from tri_loss.utils.utils import ReDirectSTD
-from tri_loss.utils.utils import measure_time
-from tri_loss.utils.distance import compute_dist
-from tri_loss.utils.visualization import get_rank_list
-from tri_loss.utils.visualization import save_rank_list_to_im
+from utils.utils import time_str
+from utils.utils import str2bool
+from utils.utils import load_state_dict
+from utils.utils import set_devices
+from utils.utils import ReDirectSTD
+from utils.utils import measure_time
+from utils.distance import compute_dist
+from utils.visualization import get_rank_list
+from utils.visualization import save_rank_list_to_im
 
+from apex import amp
+from torch import optim
 
 class Config(object):
   def __init__(self):
@@ -48,6 +53,13 @@ class Config(object):
     parser.add_argument('--exp_dir', type=str, default='')
     parser.add_argument('--ckpt_file', type=str, default='')
     parser.add_argument('--model_weight_file', type=str, default='')
+    parser.add_argument('--opt-level', type=str, default='O0',
+      choices=['O0', 'O1', 'O2', 'O3'])
+
+    parser.add_argument('--net', type=str, default='mobilenetV2',
+                      choices=['resnet50', 'shuffelnetV2', 'mobilenetV2'])
+
+
 
     args = parser.parse_args()
 
@@ -104,6 +116,8 @@ class Config(object):
     # The last block of ResNet has stride 2. We can set the stride to 1 so that
     # the spatial resolution before global pooling is doubled.
     self.last_conv_stride = args.last_conv_stride
+    self.opt_level = args.opt_level
+    self.net = args.net
 
     # Whether to normalize feature to unit length along the Channel dimension,
     # before computing distance
@@ -154,7 +168,7 @@ class ExtractFeature(object):
     self.model.eval()
     ims = Variable(self.TVT(torch.from_numpy(ims).float()))
     feat = self.model(ims)
-    feat = feat.data.cpu().numpy()
+    feat = feat.data.cpu().numpy().astype(np.float32)
     # Restore the model to its old train/eval mode.
     self.model.train(old_train_eval_model)
     return feat
@@ -187,7 +201,20 @@ def main():
   # Model #
   #########
 
-  model = Model(path_to_predefined='', pretrained=False)
+  model = Model(cfg.net, path_to_predefined='', pretrained=False, last_conv_stride=cfg.last_conv_stride)
+  model.cuda()
+  
+  r'''
+  This is compeletly useless, but since I used apex, and its optimization level
+  has different effect on each layer of networ and optimizer is mandatory argument, I created this optimizer.
+  '''
+  optimizer = optim.Adam(model.parameters())
+  
+  model, optimizer = amp.initialize(model, optimizer,
+                                    opt_level=cfg.opt_level,
+                                    #loss_scale=cfg.loss_scale
+                                )
+
   print(model)
   
   # Model wrapper
@@ -234,7 +261,7 @@ def main():
   is_q = marks == 0
   is_g = marks == 1
 
-  prng = np.random.RandomState(1)
+  prng = np.random.RandomState(2)
   # selected query indices
   sel_q_inds = prng.permutation(range(np.sum(is_q)))[:cfg.num_queries]
 
@@ -254,9 +281,24 @@ def main():
   # Save Rank List as Image #
   ###########################
 
-  q_im_paths = [ospj(test_set.im_dir, n) for n in q_im_names]
-  save_paths = [ospj(cfg.exp_dir, 'rank_lists', n) for n in q_im_names]
-  g_im_paths = [ospj(test_set.im_dir, n) for n in im_names[is_g]]
+
+  q_im_paths = list()
+  for n in q_im_names:
+    if isinstance(n, bytes):
+      n = n.decode("utf-8")
+    q_im_paths.append(ospj(test_set.im_dir, n))
+  
+  save_paths = list()
+  for n in q_im_names:
+    if isinstance(n, bytes):
+      n = n.decode("utf-8")
+    save_paths.append(ospj(cfg.exp_dir, 'rank_lists', n))
+
+  g_im_paths = list()
+  for n in im_names[is_g]:
+    if isinstance(n, bytes):
+      n = n.decode("utf-8")
+    g_im_paths.append(ospj(test_set.im_dir, n))
 
   for dist_vec, q_id, q_cam, q_im_path, save_path in zip(
       q_g_dist, q_ids, q_cams, q_im_paths, save_paths):

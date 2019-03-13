@@ -3,7 +3,7 @@ from PIL import Image
 import cv2
 from os.path import dirname as ospdn
 
-from tri_loss.utils.utils import may_make_dir
+from utils.utils import may_make_dir
 
 
 def add_border(im, border_width, value):

@@ -85,7 +85,7 @@ def hard_example_mining(dist_mat, labels, return_inds=False):
 
   return dist_ap, dist_an
 
-#Loss function is really important for us. We should keep at as 32bit flaoting precision
+#Loss function is really important for us. We should keep at as 32bit floating precision
 @amp.float_function
 def global_loss(tri_loss, global_feat, labels, normalize_feature=True):
   """

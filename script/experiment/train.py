@@ -81,7 +81,7 @@ class Config(object):
     parser.add_argument('--model_weight_file', type=str, default='')
     
     # Half precision training
-    parser.add_argument('--opt-level', type=str, default='O3',
+    parser.add_argument('--opt-level', type=str, default='O0',
                         choices=['O0', 'O1', 'O2', 'O3'])
     parser.add_argument('--keep-batchnorm-fp32', type=str2bool, default=True)
     parser.add_argument('--loss-scale', type=str, default=None)
@@ -100,7 +100,6 @@ class Config(object):
 
     parser.add_argument('--net_pretrained_path', type=str, default='')
 
-  
     parser.add_argument('--net', type=str, default='mobilenetV2',
                         choices=['resnet50', 'shuffelnetV2', 'mobilenetV2'])
 
