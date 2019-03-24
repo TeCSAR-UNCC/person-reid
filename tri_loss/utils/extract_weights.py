@@ -21,7 +21,7 @@ def save_models(net, check_point_file, model_file, image_h_w, onnx_file, opt_lev
     data = torch.load(check_point_file, map_location=map_location)
 
     models = dict(data['state_dicts'][0])
-    dummy_input = torch.randn(10, 3, image_h_w[0], image_h_w[1], device='cuda')
+    dummy_input = torch.randn(10, 3, image_h_w[0], image_h_w[1], device='cuda').half()
     model = Model(net, pretrained=False)
     model.load_state_dict(models)
     model.cuda()

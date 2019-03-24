@@ -1,11 +1,11 @@
 #!/bin/bash
 #last_conv_stride is only applicable for ResNet-50
 
-NET=resnet50
-NET_VER="$NET"_16bit
+NET=mobilenetV2
+NET_VER="$NET"
 DIR=./expt_res/$NET_VER
 Model=$NET.pt
-Dataset=market1501
+Dataset=cuhk03
 
 python3 script/experiment/visualize_rank_list.py \
 -d '(0,)' \
@@ -16,5 +16,5 @@ python3 script/experiment/visualize_rank_list.py \
 --exp_dir ./visu_dir/$NET_VER/$Dataset \
 --model_weight_file $DIR/$Model \
 --last_conv_stride 1 \
---opt-level "O2" \
+--opt-level "O0" \
 --net $NET
