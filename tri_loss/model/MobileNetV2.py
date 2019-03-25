@@ -1,3 +1,8 @@
+"""
+This MobileNetV2 implementation is modified from the following repository:
+https://github.com/tonylins/pytorch-mobilenet-v2
+"""
+
 import torch.nn as nn
 import math
 import torch

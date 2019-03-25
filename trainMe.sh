@@ -19,11 +19,4 @@ python3 script/experiment/train.py \
 --crop_ratio 1 \
 --opt-level O2 \
 --net  $NET \
---net_pretrained_path /mnt/4tb/person-reid-triplet-loss-two-models-baseline-python3/mobilenet_v2.pth.tar \
-#--net_pretrained_path /mnt/4tb/person-reid-triplet-loss-two-models-baseline-python3/shufflenetv2_x1_69.402_88.374.pth.tar # It is not applicable for ResNet50
-
-
-#--last_conv_stride 1 \ # Not useful in our case. 'market1501', 'cuhk03', 'duke', 'combined' #--lr_decay_type staircase \ #--resize_h_w '(224,224)' \
-#--shuffle_net_pretrained_path /mnt/4tb/person-reid-triplet-loss-two-models-baseline/shufflenetv2_x1_69.402_88.374.pth.tar \ CUDA_VISIBLE_DEVICES=1 
-#--net_pretrained_path /mnt/4tb/person-reid-triplet-loss-two-models-baseline-python3/mobilenet_v2.pth.tar \
-#--base_lr 0.001 \shuffelnetV2
+--net_pretrained_path ./mobilenet_v2.pth.tar
