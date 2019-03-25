@@ -45,8 +45,8 @@ Run the `extractModels.sh`:
 Copyright (c) 2018, University of North Carolina at Charlotte. All rights reserved. - see the [LICENSE](https://raw.githubusercontent.com/mbaharan/person-reid/master/LICENSE) file for details.
 
 ## To do:
-\[ ] Supporting ShuffleNet-V2 
-I was able to train the shuffleNetV2 in python2.7; however, I could make Nvidia Apex working in python 2.7. I am not sure the reason why this network cannot be trained in python3 with PyTorch v1.0.0.
+[ ] Supporting ShuffleNet-V2 
+I was able to train the shuffleNetV2 in python2.7; however, I couldn't make Nvidia Apex working in python 2.7. I am not sure why this network cannot be trained in python3 with PyTorch v1.0.0.
 
 ## Acknowledgments
 * [Triplet loss baseline in person re-identification](https://github.com/huanghoujing/person-reid-triplet-loss-baseline)
