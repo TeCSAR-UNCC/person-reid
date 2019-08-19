@@ -40,6 +40,26 @@ Run the `extractModels.sh`:
 ./extractModels.sh
 ```
 
+## Citing Deep RACE
+Please cite the following paper if it helps your research work:
+```
+@InProceedings{10.1007/978-3-030-27272-2_3,
+author="Baharani, Mohammadreza
+and Mohan, Shrey
+and Tabkhi, Hamed",
+editor="Karray, Fakhri
+and Campilho, Aur{\'e}lio
+and Yu, Alfred",
+title="Real-Time Person Re-identification at the Edge: A Mixed Precision Approach",
+booktitle="Image Analysis and Recognition",
+year="2019",
+publisher="Springer International Publishing",
+address="Cham",
+pages="27--39",
+isbn="978-3-030-27272-2"
+}
+```
+
 
 ## License
 Copyright (c) 2018, University of North Carolina at Charlotte. All rights reserved. - see the [LICENSE](https://raw.githubusercontent.com/mbaharan/person-reid/master/LICENSE) file for details.
