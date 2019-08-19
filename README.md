@@ -40,7 +40,7 @@ Run the `extractModels.sh`:
 ./extractModels.sh
 ```
 
-## Citing Deep RACE
+## Citing the Real-Time Person Re-identification
 Please cite the following paper if it helps your research work:
 ```
 @InProceedings{10.1007/978-3-030-27272-2_3,
